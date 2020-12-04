@@ -1,3 +1,4 @@
+from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.views import APIView
@@ -44,3 +45,22 @@ class PhotoView(APIView):
             return Response(serializer.errors)
         serializer.save()
         return Response('saved')
+
+
+import operator
+from functools import reduce
+from django.db.models import Q
+
+
+class FilterView(APIView):
+
+    def get(self, *args, **kwargs):
+        params = self.request.query_params.copy()
+        model = params.pop('model', [])
+        params = params.items()
+        obj = CarModel.objects.filter(*params)
+        print(~reduce(operator.and_, [Q(tags__tag__exact=x) for x in model]))
+        if model:
+            obj = obj.exclude(~reduce(operator.and_, [Q(tags__tag__exact=x) for x in model]))
+        data = CarSerializer(obj, many=True).data
+        return Response(data, status=status.HTTP_200_OK)

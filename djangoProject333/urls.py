@@ -24,5 +24,6 @@ urlpatterns = [
     path('cars/', include('car.urls')),
     # path('auth', include('rest_framework.urls'))
     path('token', TokenObtainPairView.as_view()),
-    path('token/refresh', TokenRefreshView.as_view())
+    path('token/refresh', TokenRefreshView.as_view()),
+    path('posts/', include('post.urls'))
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
